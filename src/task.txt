@@ -1,0 +1,14 @@
+React test task
+
+Requirements
+1. Create React application with your own component, which should display JSON data in a tree view.
+2. JSON can have any nested level, tree should display the same hierarchy.
+3. There should be an ability to collapse or expand each level of hierarchy (if it has a nested levels).
+4. Also there should be the button “expand all” (in case at least one level is collapsed), and in case all tree is expanded the button should change the name to “collapse all” with proper functionality.
+
+You can use this JSON as an example:
+https://en.wikipedia.org/w/api.php?action=query&format=json&list=categorymembers%7Cmostviewed&cmtitle=Category%3AJavaScript&cmlimit=500&pvimlimit=500
+
+Please write your own components for displaying JSON tree, don't use third party libraries.
+Use best practices and approaches regarding code formatting, project structure and application performance.
+Please include a README with instructions to view your solution.
