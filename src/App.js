@@ -1,14 +1,16 @@
 import React from "react";
 import "./App.css";
 import { json } from "./json-data";
+import Emitter from './emitter';
 
 function isEmpty(obj) {
   for (var prop in obj) {
     if (obj.hasOwnProperty(prop)) return false;
   }
-
   return true;
 }
+
+const CHANGE_TREE_VISIBILITY = "CHANGE_TREE_VISIBILITY";
 
 function App() {
   return (
@@ -28,6 +30,7 @@ class JsonViewer extends React.Component {
     };
 
     this.onChangeBranchVisibility = this.onChangeBranchVisibility.bind(this);
+    this.onChangeTreeVisibility = this.onChangeTreeVisibility.bind(this);
   }
 
   renderTree() {
@@ -117,14 +120,16 @@ class JsonViewer extends React.Component {
     const { isAllTreeVisible } = this.state;
 
     return (
-      <button onClick={this.onChangeTreeVisibility}>
+      <button className="toggleTreeBtn" onClick={this.onChangeTreeVisibility}>
         {isAllTreeVisible ? "Collapse" : "Expand"} all
       </button>
     );
   }
 
-  onChangeTreeVisibility(state) {
-    this.setState({ isAllTreeVisible: state });
+  onChangeTreeVisibility() {
+    const newState = !this.state.isAllTreeVisible;
+    this.setState({ isAllTreeVisible: newState });
+    Emitter.emit(CHANGE_TREE_VISIBILITY, newState);
   }
 
   render() {
@@ -145,6 +150,18 @@ class JsonBranch extends React.Component {
     this.onChangeVisibility = this.onChangeVisibility.bind(this);
   }
 
+  componentDidMount() {
+    Emitter.on(CHANGE_TREE_VISIBILITY, (newValue) => {
+      if (this.state.isVisible !== newValue) {
+        this.setState({ isVisible: newValue });
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    Emitter.off(CHANGE_TREE_VISIBILITY);
+  }
+
   onChangeVisibility(event) {
     event.stopPropagation();
     if (!this.props.isParent) return;
@@ -158,17 +175,22 @@ class JsonBranch extends React.Component {
     const { isParent } = this.props;
     const { isVisible } = this.state;
 
-    return isParent ? <span>{isVisible ? "-" : "+"} </span> : null;
+    return isParent ? <button className="toggleBranchBtn">{isVisible ? "-" : "+"} </button> : null;
   }
 
   render() {
-    const { name, value } = this.props;
+    const { name, value, isParent } = this.props;
     const { isVisible } = this.state;
 
     return (
-      <li onClick={this.onChangeVisibility}>
-        {this.renderVisibilityIndicator()}
-        {name}: {isVisible ? value : null}
+      <li>
+        <span className={isParent ? 'parent' : ''} onClick={this.onChangeVisibility}>
+          {this.renderVisibilityIndicator()}
+          {name}: 
+        </span>
+        <span hidden={!isVisible}>
+          {value}
+        </span>
       </li>
     );
   }

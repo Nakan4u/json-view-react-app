@@ -1,3 +1,17 @@
 .App h1 {
   text-align: center;
 }
+
+.toggleTreeBtn {
+  margin: 20px;
+}
+
+.toggleBranchBtn {
+  width: 25px;
+  margin-right: 10px;
+}
+
+button,
+.parent {
+  cursor: pointer;
+}
