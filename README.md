@@ -1,5 +1,15 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## App demo
+link [demo](https://nakan4u.github.io/json-view-react-app/index.html);
+
+## App requirements
+React test task Requirements:
+1. Create React application with your own component, which should display JSON data in a tree view.
+2. JSON can have any nested level, tree should display the same hierarchy.
+3. There should be an ability to collapse or expand each level of hierarchy (if it has a nested levels).
+4. Also there should be the button “expand all” (in case at least one level is collapsed), and in case all tree is expanded the button should change the name to “collapse all” with proper functionality.
+
 ## Available Scripts
 
 In the project directory, you can run:
