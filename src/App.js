@@ -40,6 +40,10 @@ class JsonViewer extends React.Component {
       return <p>no data provided!</p>;
     }
 
+    if (Array.isArray(data)) {
+      return this.renderListFromArray(data);
+    }
+
     return this.renderListFromObject(data);
   }
 
@@ -152,7 +156,7 @@ class JsonBranch extends React.Component {
 
   componentDidMount() {
     Emitter.on(CHANGE_TREE_VISIBILITY, (newValue) => {
-      if (this.state.isVisible !== newValue) {
+      if (this.props.isParent && this.state.isVisible !== newValue) {
         this.setState({ isVisible: newValue });
       }
     })
