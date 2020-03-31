@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import { json } from "./json-data";
 
 function isEmpty(obj) {
   for (var prop in obj) {
@@ -9,39 +10,27 @@ function isEmpty(obj) {
   return true;
 }
 
-var test_data = {
-  categorymembers: [
-    {
-      pageid: 9845,
-      ns: 0,
-      title: "JavaScript"
-    },
-    {
-      pageid: 53741908,
-      ns: 0,
-      title: "Index of JavaScript-related articles"
-    }
-  ],
-  categorymembers2: [],
-  categorymembers3: {},
-  categorymembers4: null,
-  categorymembers5: {
-    test: 'test',
-    test2: 'test2'
-  }
-};
-
 function App() {
   return (
     <div className="App">
       <h1>JSON view app</h1>
-      <JsonViewer data={test_data}></JsonViewer>
+      <JsonViewer data={json}></JsonViewer>
     </div>
   );
 }
 
 class JsonViewer extends React.Component {
-  createDataTree() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hiddenItems: new Set(),
+      isAllTreeVisible: true
+    };
+
+    this.onChangeBranchVisibility = this.onChangeBranchVisibility.bind(this);
+  }
+
+  renderTree() {
     const { data } = this.props;
 
     if (!data) {
@@ -95,12 +84,56 @@ class JsonViewer extends React.Component {
     }
 
     return (
-      <JsonBranch name={key} value={valueData} isParent={isParent}></JsonBranch>
+      <JsonBranch
+        name={key}
+        value={valueData}
+        isParent={isParent}
+        onChangeBranchVisibility={this.onChangeBranchVisibility}
+      ></JsonBranch>
     );
   }
 
+  onChangeBranchVisibility(isVisible, branchName) {
+    const { hiddenItems } = this.state;
+    let newData;
+
+    if (!isVisible) {
+      newData = hiddenItems.add(branchName);
+      this.setState({ hiddenItems: newData });
+    } else {
+      newData = new Set(hiddenItems);
+      newData.delete(branchName);
+      this.setState({ hiddenItems: newData });
+    }
+    this.onHiddenItemsChange(newData);
+  }
+
+  onHiddenItemsChange(hiddenItems) {
+    const isHiddenItems = hiddenItems.size;
+    this.setState({ isAllTreeVisible: !isHiddenItems });
+  }
+
+  renderToggleButton() {
+    const { isAllTreeVisible } = this.state;
+
+    return (
+      <button onClick={this.onChangeTreeVisibility}>
+        {isAllTreeVisible ? "Collapse" : "Expand"} all
+      </button>
+    );
+  }
+
+  onChangeTreeVisibility(state) {
+    this.setState({ isAllTreeVisible: state });
+  }
+
   render() {
-    return <div className="wrapper">{this.createDataTree()}</div>;
+    return (
+      <div className="wrapper">
+        {this.renderToggleButton()}
+        {this.renderTree()}
+      </div>
+    );
   }
 }
 
@@ -115,7 +148,10 @@ class JsonBranch extends React.Component {
   onChangeVisibility(event) {
     event.stopPropagation();
     if (!this.props.isParent) return;
-    this.setState({isVisible: !this.state.isVisible});
+    const newState = !this.state.isVisible;
+
+    this.props.onChangeBranchVisibility(newState, this.props.name);
+    this.setState({ isVisible: newState });
   }
 
   renderVisibilityIndicator() {
@@ -131,7 +167,7 @@ class JsonBranch extends React.Component {
 
     return (
       <li onClick={this.onChangeVisibility}>
-        {this.renderVisibilityIndicator()} 
+        {this.renderVisibilityIndicator()}
         {name}: {isVisible ? value : null}
       </li>
     );
