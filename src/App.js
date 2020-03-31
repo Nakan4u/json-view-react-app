@@ -188,10 +188,10 @@ class JsonBranch extends React.Component {
 
     return (
       <li>
-        <span className={isParent ? 'parent' : ''} onClick={this.onChangeVisibility}>
+        <b className={isParent ? 'parent' : ''} onClick={this.onChangeVisibility}>
           {this.renderVisibilityIndicator()}
           {name}:&nbsp;
-        </span>
+        </b>
         <span hidden={!isVisible}>
           {value}
         </span>
